@@ -1,14 +1,13 @@
 import time, math, argparse, cv2, sys, torch
 import numpy as np
+import json
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 class Sample:
 
-    def __init__(self, args):
-
-        self.args = args
+    def __init__(self):
 
         # classes for the age and gender category
         self.ageList = ['(0-3)', '(4-7)', '(8-13)', '(14-20)', '(25-32)', '(38-43)', '(48-53)', '(60-100)']
@@ -63,80 +62,87 @@ class Sample:
 
     def caffeInference(self):
 
-        
-        cap = cv2.VideoCapture(self.args.input if self.args.input else 0)
-        padding = 20 
+        with open('/kaggle/working/output.json', 'r') as json_file:
+            data = json.load(json_file)
 
-       
-        while True:
-              
-            hasFrame, frame = cap.read()  
+        num_sets = len(data)
 
-            
-            if not hasFrame:
-                # cv2.waitKey()
-                break
+        print(f'There are {num_sets} sets in the JSON file.')
 
-           
-            frameFace, bboxes = self.getFaceBox(self.faceNet, frame)
-
-          
-            if not bboxes:
-                print("No face Detected, Checking next frame")
-                cv2.putText(frameFace, "NO FACE DETECTED!", (40, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2,
-                            cv2.LINE_AA)  
-                # cv2.imshow("Age Gender Demo", frameFace)  # display empty frames with message
-            else:
-            
-                for bbox in bboxes:
-                   
-                    face = frame[max(0, bbox[1] - padding):min(bbox[3] + padding, frame.shape[0] - 1),
-                           max(0, bbox[0] - padding):min(bbox[2] + padding, frame.shape[1] - 1)]
-
-                  
-                    blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), self.MODEL_MEAN_VALUES, swapRB=False)
-
-                    
-                    self.genderNet.setInput(
-                        blob) 
-                    genderPreds = self.genderNet.forward()  
-                    gender = self.genders[genderPreds[0].argmax()]  
-
-                  
-                    # print("Gender : {}, conf = {:.3f}".format(gender, genderPreds[0].max()))
-                  
-
-                 
-                    self.ageNet.setInput(blob) 
-                    agePreds = self.ageNet.forward()  
-                    age = self.ageList[agePreds[0].argmax()] 
-
-                    # print("Age : {}, conf = {:.3f}".format(age, agePreds[0].max()))
-                    
-
-                    
-                    label = "{},{}".format(gender, age)
-
-                    cv2.putText(frameFace, label, (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255),
-                                2,
-                                cv2.LINE_AA)
-
-                    # if self.args.output != "":
-                    #     filename = "output/predictions/" + str(args.output)
-                    #     cv2.imwrite(filename, frameFace)
-                    # # cv2.imshow("Age Gender Demo", frameFace)
+        New_Jdata = []
+  
+        for entry in data:
+            source_path = entry.get('Refernece_img', '')
+            target_path = entry.get('reference_video', '')
+            output_path = entry.get('output_video', '')
 
         
-        print("Gender--> " ,gender )
-        print("Age--->   ", age)
+            cap = cv2.VideoCapture(source_path if source_path else 0)
+            padding = 20 
 
+        
+            while True:
+                
+                
+                hasFrame, frame = cap.read()  
 
-parser = argparse.ArgumentParser(description='Use this script to run age and gender recognition using OpenCV.')
-parser.add_argument('-i', '--input', type=str,
-                    help='Path to input image or video file. Skip this argument to capture frames from a camera.')
-parser.add_argument('-o', '--output', type=str, default="",
-                    help='Path to output the prediction in case of single image.')
+                
+                if not hasFrame:
+                    # cv2.waitKey()
+                    break
 
-args = parser.parse_args()
-s = Sample(args)
+            
+                frameFace, bboxes = self.getFaceBox(self.faceNet, frame)
+
+            
+                if not bboxes:
+                    print("No face Detected, Checking next frame")
+                    cv2.putText(frameFace, "NO FACE DETECTED!", (40, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2,
+                                cv2.LINE_AA)  
+                    # cv2.imshow("Age Gender Demo", frameFace)  # display empty frames with message
+                else:
+                
+                    for bbox in bboxes:
+                    
+                        face = frame[max(0, bbox[1] - padding):min(bbox[3] + padding, frame.shape[0] - 1),
+                            max(0, bbox[0] - padding):min(bbox[2] + padding, frame.shape[1] - 1)]
+
+                    
+                        blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), self.MODEL_MEAN_VALUES, swapRB=False)
+
+                        
+                        self.genderNet.setInput(
+                            blob) 
+                        genderPreds = self.genderNet.forward()  
+                        gender = self.genders[genderPreds[0].argmax()]  
+
+                    
+                        # print("Gender : {}, conf = {:.3f}".format(gender, genderPreds[0].max()))
+                    
+
+                    
+                        self.ageNet.setInput(blob) 
+                        agePreds = self.ageNet.forward()  
+                        age = self.ageList[agePreds[0].argmax()] 
+
+                        # print("Age : {}, conf = {:.3f}".format(age, agePreds[0].max()))
+                        
+
+            print("Gender--> " ,gender )
+            print("Age--->   ", age)
+            item = {
+                "output_video": output_path,
+                "Refernece_img": source_path,
+                "reference_video": target_path,
+                "Gender":gender,
+                "Age":age
+            }
+            New_Jdata.append(item)
+
+        with open('/kaggle/working/_Output_.json', 'w') as json_file:
+            json.dump(New_Jdata, json_file, indent=4)
+        
+
+s = Sample()
 s.caffeInference()
+
