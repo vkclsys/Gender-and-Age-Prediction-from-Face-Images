@@ -69,8 +69,7 @@ class Sample:
 
        
         while True:
-            
-            t = time.time()  
+              
             hasFrame, frame = cap.read()  
 
             
@@ -122,12 +121,12 @@ class Sample:
                                 2,
                                 cv2.LINE_AA)
 
-                    if self.args.output != "":
-                        filename = "output/predictions/" + str(args.output)
-                        cv2.imwrite(filename, frameFace)
-                    # cv2.imshow("Age Gender Demo", frameFace)
+                    # if self.args.output != "":
+                    #     filename = "output/predictions/" + str(args.output)
+                    #     cv2.imwrite(filename, frameFace)
+                    # # cv2.imshow("Age Gender Demo", frameFace)
 
-        print("time : {:.3f}".format(time.time() - t))
+        
         print("Gender--> " ,gender )
         print("Age--->   ", age)
 
