@@ -77,7 +77,7 @@ class Sample:
             output_path = entry.get('output_video', '')
 
         
-            cap = cv2.VideoCapture(source_path if source_path else 0)
+            cap = cv2.VideoCapture(target_path if target_path else 0)
             padding = 20 
 
         
