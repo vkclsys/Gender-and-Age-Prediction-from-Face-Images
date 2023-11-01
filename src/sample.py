@@ -151,6 +151,6 @@ parser.add_argument('-o', '--output', type=str, default="",
                     help='Path to output the prediction in case of single image.')
 
 args = parser.parse_args()
-s = Sample()
+s = Sample(args)
 s.caffeInference()
 
