@@ -112,8 +112,7 @@ class Sample:
                         blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), self.MODEL_MEAN_VALUES, swapRB=False)
 
                         
-                        self.genderNet.setInput(
-                            blob) 
+                        self.genderNet.setInput(blob) 
                         genderPreds = self.genderNet.forward()  
                         gender = self.genders[genderPreds[0].argmax()]  
 
@@ -124,7 +123,7 @@ class Sample:
                     
                         self.ageNet.setInput(blob) 
                         agePreds = self.ageNet.forward()  
-                        age = self.ageList[agePreds[0].argmax()] 
+                        age = self.ages[agePreds[0].argmax()] 
 
                         # print("Age : {}, conf = {:.3f}".format(age, agePreds[0].max()))
                         
