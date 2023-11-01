@@ -117,19 +117,19 @@ class Sample:
                         gender = self.genders[genderPreds[0].argmax()]  
 
                     
-                        # print("Gender : {}, conf = {:.3f}".format(gender, genderPreds[0].max()))
-                    
-
+                        print("Gender : {}, conf = {:.3f}".format(gender, genderPreds[0].max()))
+           
                     
                         self.ageNet.setInput(blob) 
                         agePreds = self.ageNet.forward()  
                         age = self.ages[agePreds[0].argmax()] 
 
-                        # print("Age : {}, conf = {:.3f}".format(age, agePreds[0].max()))
-                        
+                        print("Age : {}, conf = {:.3f}".format(age, agePreds[0].max()))
+             
 
             print("Gender--> " ,gender )
             print("Age--->   ", age)
+            print("*********************")
             item = {
                 "output_video": output_path,
                 "Refernece_img": source_path,
