@@ -71,14 +71,14 @@ class Sample:
         padding = 20  # padding the bounding box by 20 pixels on all sides
 
         # loop while any key press
-        while cv2.waitKey(1) < 0:
+        while True:
             # Read frame
             t = time.time()  # start time for inference
             hasFrame, frame = cap.read()  # get the image frame from the capture object of the camera
 
             # if no frame exists, then break out of the loop and stop inference
             if not hasFrame:
-                cv2.waitKey()
+                # cv2.waitKey()
                 break
 
             # pass the input frame along with face net model for getting bounding box information
@@ -89,7 +89,7 @@ class Sample:
                 print("No face Detected, Checking next frame")
                 cv2.putText(frameFace, "NO FACE DETECTED!", (40, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2,
                             cv2.LINE_AA)  # render a message on the blank frame with no face
-                cv2.imshow("Age Gender Demo", frameFace)  # display empty frames with message
+                # cv2.imshow("Age Gender Demo", frameFace)  # display empty frames with message
             else:
                 # loop over all the bounding box detections if they exist
                 for bbox in bboxes:
@@ -130,7 +130,7 @@ class Sample:
                     if self.args.output != "":
                         filename = "output/predictions/" + str(args.output)
                         cv2.imwrite(filename, frameFace)
-                    cv2.imshow("Age Gender Demo", frameFace)
+                    # cv2.imshow("Age Gender Demo", frameFace)
 
             print("time : {:.3f}".format(time.time() - t))
 
@@ -141,14 +141,14 @@ class Sample:
         padding = 30  # padding the bounding box by 20 pixels on all sides
 
         # loop while any key press
-        while cv2.waitKey(1) < 0:
+        while True:
             # Read frame
             t = time.time()  # start time for inference
             hasFrame, frame = cap.read()  # get the image frame from the capture object of the camera
 
             # if no frame exists, then break out of the loop and stop inference
             if not hasFrame:
-                cv2.waitKey()
+                # cv2.waitKey()
                 break
 
             # pass the input frame along with face net model for getting bounding box information
@@ -159,7 +159,7 @@ class Sample:
                 print("No face Detected, Checking next frame")
                 cv2.putText(frameFace, "No face detected!", (10, 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 255), 2,
                             cv2.LINE_AA)  # render a message on the blank frame with no face
-                cv2.imshow("Age Gender Demo", frameFace)  # display empty frames with message
+                # cv2.imshow("Age Gender Demo", frameFace)  # display empty frames with message
             else:
                 # loop over all the bounding box detections if they exist
                 for bbox in bboxes:
@@ -172,7 +172,7 @@ class Sample:
                     # reshape the face image to 227x227 using the blob function and also swapping the RB planes
                     blob = cv2.dnn.blobFromImage(face, 1.0, (227, 227), self.MODEL_MEAN_VALUES, swapRB=False)
 
-                    cv2.imshow("Face blob", frameFace)
+                    # cv2.imshow("Face blob", frameFace)
                     break
             print("time : {:.3f}".format(time.time() - t))
         cv2.destroyAllWindows()
