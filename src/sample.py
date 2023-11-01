@@ -7,8 +7,9 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class Sample:
 
-    def __init__(self):
+    def __init__(self, args):
 
+        self.args = args
         # classes for the age and gender category
         self.ageList = ['(0-3)', '(4-7)', '(8-13)', '(14-20)', '(25-32)', '(38-43)', '(48-53)', '(60-100)']
         self.ages = ["(0-2)", "(4-6)", "(8-12)", "(15-20)", "(21-24)", "(25-32)",
@@ -62,7 +63,7 @@ class Sample:
 
     def caffeInference(self):
 
-        with open('/kaggle/working/output.json', 'r') as json_file:
+        with open(self.args.input, 'r') as json_file:
             data = json.load(json_file)
 
         num_sets = len(data)
@@ -139,10 +140,17 @@ class Sample:
             }
             New_Jdata.append(item)
 
-        with open('/kaggle/working/_Output_.json', 'w') as json_file:
+        with open(self.args.output, 'w') as json_file:
             json.dump(New_Jdata, json_file, indent=4)
-        
 
+        
+parser = argparse.ArgumentParser(description='Use this script to run age and gender recognition using OpenCV.')
+parser.add_argument('-i', '--input', type=str,
+                    help='Path to input image or video file. Skip this argument to capture frames from a camera.')
+parser.add_argument('-o', '--output', type=str, default="",
+                    help='Path to output the prediction in case of single image.')
+
+args = parser.parse_args()
 s = Sample()
 s.caffeInference()
 
