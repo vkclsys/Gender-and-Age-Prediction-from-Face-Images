@@ -12,9 +12,8 @@ class Sample:
         self.args = args
         # classes for the age and gender category
         self.ageList = ['(0-3)', '(4-7)', '(8-13)', '(14-20)', '(25-32)', '(38-43)', '(48-53)', '(60-100)']
-        self.ages = ["(0-3)", "(4-6)", "(7-9)","(10-12)", "(13-15)", "(16-18)", "(19-21)",
-                     "(22-24)", "(25-27)", "(28-30)", "(31-33)", "(34-36)", "(37-39)", "(40-42)", "(43-45)", "(46-48)", 
-                     "(49-51)", "(52-54)", "(55-57)", "(58-60)", "(61-63)", "(64-66)", "(67-69)", "(70-100)"]
+        self.ages = ["(0-2)", "(4-6)", "(8-12)", "(15-20)", "(21-24)", "(25-32)",
+                     "(33-37)", "(38-43)", "(44-47)", "(48-53)", "(54-59)", "(60-100)"]
         self.genders = ["Male", "Female"]
 
         # loading face detector pretrained model
@@ -78,6 +77,9 @@ class Sample:
             target_path = entry.get('reference_video', '')
             output_path = entry.get('output_video', '')
 
+            m_count = 0
+            fm_count = 0
+
         
             cap = cv2.VideoCapture(target_path if target_path else 0)
             padding = 20 
@@ -118,24 +120,39 @@ class Sample:
                         gender = self.genders[genderPreds[0].argmax()]  
 
                     
-                        print("Gender : {}, conf = {:.3f}".format(gender, genderPreds[0].max()))
+                        # print("Gender : {}, conf = {:.3f}".format(gender, genderPreds[0].max()))
+
+                        if gender == "Male":
+                            m_count = m_count + 1
+
+                        if gender == "Female":
+                            fm_count = fm_count + 1
+
+
            
                     
                         self.ageNet.setInput(blob) 
                         agePreds = self.ageNet.forward()  
-                        age = self.ages[agePreds[0].argmax()] 
+                        age = self.ageList[agePreds[0].argmax()] 
 
-                        print("Age : {}, conf = {:.3f}".format(age, agePreds[0].max()))
-             
+                        # print("Age : {}, conf = {:.3f}".format(age, agePreds[0].max()))
 
-            print("Gender--> " ,gender )
+
+
+
+            if m_count > fm_count:
+                l_gender = "Male"
+            if fm_count > m_count:
+                l_gender = "Female"
+            print("Gender--> " ,l_gender )
+
             print("Age--->   ", age)
             print("*********************")
             item = {
                 "output_video": output_path,
                 "Refernece_img": source_path,
                 "reference_video": target_path,
-                "Gender":gender,
+                "Gender":l_gender,
                 "Age":age
             }
             New_Jdata.append(item)
