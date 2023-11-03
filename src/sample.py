@@ -2,6 +2,12 @@ import time, math, argparse, cv2, sys, torch
 import numpy as np
 import json
 
+import os
+import cv2
+
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -63,25 +69,24 @@ class Sample:
 
     def caffeInference(self):
 
-        with open(self.args.input, 'r') as json_file:
-            data = json.load(json_file)
+        os.makedirs(self.args.output, exist_ok=True)
 
-        num_sets = len(data)
+        Male_number = 1
 
-        print(f'There are {num_sets} sets in the JSON file.')
+        Female_number = 1 
 
-        New_Jdata = []
-  
-        for entry in data:
-            source_path = entry.get('Refernece_img', '')
-            target_path = entry.get('reference_video', '')
-            output_path = entry.get('output_video', '')
+        for filename in os.listdir(self.args.input):
+            if filename.endswith((".mp4", ".mov")): 
+                video_path = os.path.join(self.args.input, filename)
+
+
+
 
             m_count = 0
             fm_count = 0
 
         
-            cap = cv2.VideoCapture(source_path if source_path else 0)
+            cap = cv2.VideoCapture(video_path if video_path else 0)
             padding = 20 
 
         
@@ -142,23 +147,115 @@ class Sample:
 
             if m_count > fm_count:
                 l_gender = "Male"
+
+                video_capture = cv2.VideoCapture(video_path)
+                image_saved = False  
+
+                video_name = os.path.splitext(os.path.basename(video_path))[0]
+
+                frame_number = 0
+
+                while video_capture.isOpened() and not image_saved:
+                    ret, frame = video_capture.read()
+
+                    if not ret:
+                        break 
+                
+                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+                
+                    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+                    for (x, y, w, h) in faces:
+                        
+                        # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                        face_image = frame [(y-20):y + (h+20), (x-20):x + (w+20)]
+
+                        
+                        roi_gray = gray[y:y + h, x:x + w]
+                        eyes = eye_cascade.detectMultiScale(roi_gray)
+
+                        for (ex, ey, ew, eh) in eyes:
+                            
+                            # cv2.rectangle(frame, (x + ex, y + ey), (x + ex + ew, y + ey + eh), (0, 0, 255), 2)
+
+                            if len(eyes) == 2 :
+
+                                # face_image_save = cv2.resize(frame, (640, 480))
+                                face_image_save = cv2.resize(face_image, (640, 480))
+
+                                frame_name = f'{video_name}_frame-{frame_number}_Male_{Male_number}.jpg'
+                                cv2.imwrite(os.path.join(self.args.output, frame_name), face_image_save)
+                                
+                                Male_number = Male_number + 1
+                                image_saved = True 
+
+                                break
+
+                    frame_number += 1
+
+                video_capture.release()
             if fm_count > m_count:
+
                 l_gender = "Female"
+
+
+                video_capture = cv2.VideoCapture(video_path)
+                image_saved = False  
+
+                video_name = os.path.splitext(os.path.basename(video_path))[0]
+
+                frame_number = 0
+
+                while video_capture.isOpened() and not image_saved:
+                    ret, frame = video_capture.read()
+
+                    if not ret:
+                        break 
+                
+                    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+                
+                    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+
+                    for (x, y, w, h) in faces:
+                        
+                        # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                        face_image = frame [(y-20):y + (h+20), (x-20):x + (w+20)]
+
+                        
+                        roi_gray = gray[y:y + h, x:x + w]
+                        eyes = eye_cascade.detectMultiScale(roi_gray)
+
+                        for (ex, ey, ew, eh) in eyes:
+                            
+                            # cv2.rectangle(frame, (x + ex, y + ey), (x + ex + ew, y + ey + eh), (0, 0, 255), 2)
+
+                            if len(eyes) == 2 :
+
+                                # face_image_save = cv2.resize(frame, (640, 480))
+                                face_image_save = cv2.resize(face_image, (640, 480))
+
+                                frame_name = f'{video_name}_frame-{frame_number}_Female_{Female_number}.jpg'
+                                cv2.imwrite(os.path.join(self.args.output, frame_name), face_image_save)
+                                
+                                Female_number = Female_number + 1
+                                image_saved = True 
+
+                                break
+
+                    frame_number += 1
+
+                video_capture.release()
+
+
+
+
             print("Gender--> " ,l_gender )
 
             print("Age--->   ", age)
             print("*********************")
-            item = {
-                "output_video": output_path,
-                "Refernece_img": source_path,
-                "reference_video": target_path,
-                "Gender":l_gender,
-                "Age":age
-            }
-            New_Jdata.append(item)
-
-        with open(self.args.output, 'w') as json_file:
-            json.dump(New_Jdata, json_file, indent=4)
+           
 
         
 parser = argparse.ArgumentParser(description='Use this script to run age and gender recognition using OpenCV.')
