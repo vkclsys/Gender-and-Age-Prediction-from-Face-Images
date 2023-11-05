@@ -189,7 +189,6 @@ class Sample:
                                 item = {
                                     "Refernece_img":frame_name,
                                     "Gender":l_gender,
-                                    "Age":age
                                 }
                                 data.append(item)
                                 
@@ -248,7 +247,6 @@ class Sample:
                                 item = {
                                     "Refernece_img": frame_name,
                                     "Gender":l_gender,
-                                    "Age":age
                                 }
                                 data.append(item)
 
@@ -263,22 +261,19 @@ class Sample:
 
             print("Gender--> " ,l_gender )
 
-            print("Age--->   ", age)
-            print("*********************")
-
 
         with open(self.args.Json_output, 'w') as json_file:
             json.dump(data, json_file, indent=4)
 
         print("JSON file 'output.json' has been created.")
         
-    def extract_image_path(image_path):
+    def extract_image_path(self,image_path):
     
         image_path = image_path.split('__frame')[0]
 
         return image_path
 
-    def extract_video_path(video_path):
+    def extract_video_path(self,video_path):
         
         base_name = os.path.basename(video_path)
         return os.path.splitext(base_name)[0]
