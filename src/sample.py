@@ -71,9 +71,8 @@ class Sample:
 
         os.makedirs(self.args.output, exist_ok=True)
 
-        Male_number = 1
+        data = []
 
-        Female_number = 1 
 
         for filename in os.listdir(self.args.input):
             if filename.endswith((".mp4", ".mov")): 
@@ -184,10 +183,17 @@ class Sample:
                                 # face_image_save = cv2.resize(frame, (640, 480))
                                 face_image_save = cv2.resize(face_image, (640, 480))
 
-                                frame_name = f'{video_name}_frame-{frame_number}_Male_{Male_number}.jpg'
+                                frame_name = f'{video_name}__frame--{frame_number}.jpg'
                                 cv2.imwrite(os.path.join(self.args.output, frame_name), face_image_save)
+
+                                item = {
+                                    "Refernece_img":frame_name,
+                                    "Gender":l_gender,
+                                    "Age":age
+                                }
+                                data.append(item)
                                 
-                                Male_number = Male_number + 1
+                                
                                 image_saved = True 
 
                                 break
@@ -233,13 +239,19 @@ class Sample:
 
                             if len(eyes) == 2 :
 
-                                # face_image_save = cv2.resize(frame, (640, 480))
-                                face_image_save = cv2.resize(face_image, (640, 480))
+                                face_image_save = cv2.resize(frame, (640, 480))
+                                # face_image_save = cv2.resize(face_image, (640, 480))
 
-                                frame_name = f'{video_name}_frame-{frame_number}_Female_{Female_number}.jpg'
+                                frame_name = f'{video_name}__frame--{frame_number}.jpg'
                                 cv2.imwrite(os.path.join(self.args.output, frame_name), face_image_save)
                                 
-                                Female_number = Female_number + 1
+                                item = {
+                                    "Refernece_img": frame_name,
+                                    "Gender":l_gender,
+                                    "Age":age
+                                }
+                                data.append(item)
+
                                 image_saved = True 
 
                                 break
@@ -255,14 +267,23 @@ class Sample:
 
             print("Age--->   ", age)
             print("*********************")
-           
+
+
+        with open(self.args.Json_output, 'w') as json_file:
+            json.dump(data, json_file, indent=4)
+
+        print("JSON file 'output.json' has been created.")
+        
 
         
 parser = argparse.ArgumentParser(description='Use this script to run age and gender recognition using OpenCV.')
 parser.add_argument('-i', '--input', type=str,
-                    help='Path to input image or video file. Skip this argument to capture frames from a camera.')
+                    help='Path to input image or video file')
 parser.add_argument('-o', '--output', type=str, default="",
-                    help='Path to output the prediction in case of single image.')
+                    help='Path to output the cropped  image.')
+
+parser.add_argument('-oj', '--Json_output', type=str, default="",
+                    help='Path to output Json path.')
 
 args = parser.parse_args()
 s = Sample(args)
