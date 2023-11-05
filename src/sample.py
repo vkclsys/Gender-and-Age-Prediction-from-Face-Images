@@ -286,6 +286,7 @@ class Sample:
         print("jsoncreation")
 
         Json_Output = self.args.Json_output + "Output.json"
+        Json_Input = self.args.Json_Input + "Input.json"
 
         Jdata = []
         swap_i = 1
@@ -355,7 +356,7 @@ class Sample:
                 l_gender = "Male"
 
 
-                with open(self.args.Json_output, 'r') as file:
+                with open(Json_Input, 'r') as file:
                     data = json.load(file)
 
                 matching_images = [item['Image'] for item in data if item['Gender'] == l_gender]
