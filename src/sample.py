@@ -391,7 +391,7 @@ class Sample:
                 l_gender = "Female"
 
 
-                with open(self.args.Json_output, 'r') as file:
+                with open(Json_Input, 'r') as file:
                     data = json.load(file)
 
                 matching_images = [item['Image'] for item in data if item['Gender'] == l_gender]

@@ -59,12 +59,12 @@ def parse_args() -> None:
     roop.globals.jsource_path = args.jsource_path 
 
   
-    roop.globals.source_path = args.source_path 
-    roop.globals.target_path = args.target_path
-    roop.globals.output_path = args.output_path
+    roop.globals.source_path_temp = args.source_path 
+    roop.globals.target_path_temp = args.target_path
+    roop.globals.output_path_temp = args.output_path
 
 
-    roop.globals.headless = roop.globals.source_path is not None and roop.globals.target_path is not None and roop.globals.output_path is not None
+    roop.globals.headless = roop.globals.source_path_temp is not None and roop.globals.target_path_temp is not None and roop.globals.output_path_temp is not None
     roop.globals.frame_processors = args.frame_processor
     roop.globals.keep_fps = args.keep_fps
     roop.globals.keep_frames = args.keep_frames
@@ -147,9 +147,16 @@ def start() -> None:
     print(f'There are {num_sets} sets in the JSON file.')
   
     for entry in data:
-        roop.globals.source_path = entry.get('Refernece_img', '')
-        roop.globals.target_path = entry.get('reference_video', '')
-        roop.globals.output_path = entry.get('output_video', '')
+        temp_source_path = entry.get('Refernece_img', '')
+        temp_target_path = entry.get('reference_video', '')
+        temp_output_path = entry.get('output_video', '')
+
+        roop.globals.source_path =  roop.globals.source_path_temp + temp_source_path
+
+        roop.globals.target_path =  roop.globals.source_path_temp + temp_target_path
+
+        roop.globals.output_path = roop.globals.output_path_temp + temp_output_path
+
 
         print(roop.globals.source_path)
 
