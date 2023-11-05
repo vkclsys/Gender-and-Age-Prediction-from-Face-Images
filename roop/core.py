@@ -147,9 +147,9 @@ def start() -> None:
     print(f'There are {num_sets} sets in the JSON file.')
   
     for entry in data:
-        temp_source_path = entry.get('Refernece_img', '')
-        temp_target_path = entry.get('reference_video', '')
-        temp_output_path = entry.get('output_video', '')
+        temp_source_path = entry.get('Image', '')
+        temp_target_path = entry.get('Video', '')
+        temp_output_path = entry.get('Swapped_video', '')
 
         roop.globals.source_path =  roop.globals.source_path_temp + temp_source_path
 

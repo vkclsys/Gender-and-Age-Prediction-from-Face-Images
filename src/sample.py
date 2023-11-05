@@ -407,9 +407,9 @@ class Sample:
                 for image_path in matching_images:
                     if self.extract_image_path(image_path) != self.extract_video_path(video_path):
                         item_1 = {
-                                    "reference_video" : filename,
-                                    "Refernece_img": image_path,
-                                    "output_video": f"swapped_video_{swap_i}.mp4",
+                                    "Video" : filename,
+                                    "Image": image_path,
+                                    "Swapped_video": f"swapped_video_{swap_i}.mp4",
                                     "Gender":l_gender,
                                     "Age":age
                         }
