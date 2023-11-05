@@ -69,7 +69,11 @@ class Sample:
 
     def caffeInference(self):
 
-        os.makedirs(self.args.output, exist_ok=True)
+        img_folder =self.args.output + "Image_for_swap"
+
+        os.makedirs(img_folder, exist_ok=True)
+
+        Json_Input = self.args.Json_Input + "Input.json"
 
         data = []
 
@@ -184,10 +188,10 @@ class Sample:
                                 # face_image_save = cv2.resize(face_image, (640, 480))
 
                                 frame_name = f'{video_name}__frame--{frame_number}.jpg'
-                                cv2.imwrite(os.path.join(self.args.output, frame_name), face_image_save)
+                                cv2.imwrite(os.path.join(img_folder, frame_name), face_image_save)
 
                                 item = {
-                                    "Refernece_img":frame_name,
+                                    "Image":frame_name,
                                     "Gender":l_gender,
                                 }
                                 data.append(item)
@@ -242,10 +246,10 @@ class Sample:
                                 # face_image_save = cv2.resize(face_image, (640, 480))
 
                                 frame_name = f'{video_name}__frame--{frame_number}.jpg'
-                                cv2.imwrite(os.path.join(self.args.output, frame_name), face_image_save)
+                                cv2.imwrite(os.path.join(img_folder, frame_name), face_image_save)
                                 
                                 item = {
-                                    "Refernece_img": frame_name,
+                                    "Image": frame_name,
                                     "Gender":l_gender,
                                 }
                                 data.append(item)
@@ -262,7 +266,7 @@ class Sample:
             print("Gender--> " ,l_gender )
 
 
-        with open(self.args.Json_output, 'w') as json_file:
+        with open(Json_Input, 'w') as json_file:
             json.dump(data, json_file, indent=4)
 
         print("JSON file 'output.json' has been created.")
@@ -280,6 +284,8 @@ class Sample:
     
     def jsoncreation(self):
         print("jsoncreation")
+
+        Json_Output = self.args.Json_output + "Output.json"
 
         Jdata = []
         swap_i = 1
@@ -352,7 +358,7 @@ class Sample:
                 with open(self.args.Json_output, 'r') as file:
                     data = json.load(file)
 
-                matching_images = [item['Refernece_img'] for item in data if item['Gender'] == l_gender]
+                matching_images = [item['Image'] for item in data if item['Gender'] == l_gender]
 
 
                 if not matching_images:
@@ -365,9 +371,9 @@ class Sample:
                 for image_path in matching_images:
                     if self.extract_image_path(image_path) != self.extract_video_path(video_path):
                         item_1 = {
-                                    "reference_video" : video_path,
-                                    "Refernece_img": image_path,
-                                    "output_video": f"swapped_video_{swap_i}.mp4",
+                                    "Video" : filename,
+                                    "Image": image_path,
+                                    "Swapped_video": f"swapped_video_{swap_i}.mp4",
                                     "Gender":l_gender,
                                     "Age":age
                         }
@@ -387,7 +393,7 @@ class Sample:
                 with open(self.args.Json_output, 'r') as file:
                     data = json.load(file)
 
-                matching_images = [item['Refernece_img'] for item in data if item['Gender'] == l_gender]
+                matching_images = [item['Image'] for item in data if item['Gender'] == l_gender]
 
 
                 if not matching_images:
@@ -400,7 +406,7 @@ class Sample:
                 for image_path in matching_images:
                     if self.extract_image_path(image_path) != self.extract_video_path(video_path):
                         item_1 = {
-                                    "reference_video" : video_path,
+                                    "reference_video" : filename,
                                     "Refernece_img": image_path,
                                     "output_video": f"swapped_video_{swap_i}.mp4",
                                     "Gender":l_gender,
@@ -411,7 +417,7 @@ class Sample:
                         break
 
 
-        with open(self.args.Json_output_j, 'w') as json_file:
+        with open(Json_Output, 'w') as json_file:
             json.dump(Jdata, json_file, indent=4)
 
         print("JSON file has been created.")
@@ -426,10 +432,10 @@ parser.add_argument('-i', '--input', type=str,
 parser.add_argument('-o', '--output', type=str, default="",
                     help='Path to output the cropped  image.')
 
-parser.add_argument('-oj', '--Json_output', type=str, default="",
-                    help='Path to output Json path.')
+parser.add_argument('-ij', '--Json_Input', type=str, default="",
+                    help='Path to Input Json path.')
 
-parser.add_argument('-ojj', '--Json_output_j', type=str, default="",
+parser.add_argument('-oj', '--Json_output', type=str, default="",
                     help='Path to output Json path.')
 
 args = parser.parse_args()
