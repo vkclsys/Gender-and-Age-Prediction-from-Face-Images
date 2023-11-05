@@ -284,6 +284,7 @@ class Sample:
         return os.path.splitext(base_name)[0]
     
     def jsoncreation(self):
+        print("jsoncreation")
 
         Jdata = []
         swap_i = 1
@@ -439,5 +440,5 @@ parser.add_argument('-ojj', '--Json_output_j', type=str, default="",
 args = parser.parse_args()
 s = Sample(args)
 s.caffeInference()
-s
+s.jsoncreation()
 
