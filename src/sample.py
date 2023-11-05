@@ -180,8 +180,8 @@ class Sample:
 
                             if len(eyes) == 2 :
 
-                                # face_image_save = cv2.resize(frame, (640, 480))
-                                face_image_save = cv2.resize(face_image, (640, 480))
+                                face_image_save = cv2.resize(frame, (640, 480))
+                                # face_image_save = cv2.resize(face_image, (640, 480))
 
                                 frame_name = f'{video_name}__frame--{frame_number}.jpg'
                                 cv2.imwrite(os.path.join(self.args.output, frame_name), face_image_save)
@@ -355,7 +355,7 @@ class Sample:
 
 
                 with open(self.args.Json_output, 'r') as file:
-                    data = json.load
+                    data = json.load(file)
 
                 matching_images = [item['Refernece_img'] for item in data if item['Gender'] == l_gender]
 
@@ -390,7 +390,7 @@ class Sample:
 
 
                 with open(self.args.Json_output, 'r') as file:
-                    data = json.load
+                    data = json.load(file)
 
                 matching_images = [item['Refernece_img'] for item in data if item['Gender'] == l_gender]
 
