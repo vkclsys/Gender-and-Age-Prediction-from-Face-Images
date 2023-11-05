@@ -153,7 +153,7 @@ def start() -> None:
 
         roop.globals.source_path =  roop.globals.source_path_temp + temp_source_path
 
-        roop.globals.target_path =  roop.globals.source_path_temp + temp_target_path
+        roop.globals.target_path =  roop.globals.target_path_temp + temp_target_path
 
         roop.globals.output_path = roop.globals.output_path_temp + temp_output_path
 
